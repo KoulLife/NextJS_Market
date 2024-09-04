@@ -3,7 +3,6 @@ import GoogleProvider from "next-auth/providers/google"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { PrismaClient } from "@prisma/client"
 import CredentialsProvider from "next-auth/providers/credentials";
-
 const prisma = new PrismaClient()
 
 export const authOptions: NextAuthOptions = {
@@ -24,7 +23,7 @@ export const authOptions: NextAuthOptions = {
         password: {label: "Password", type: "password"}
       },
       async authorize(credentials, req) {
-        const user = {id: "1", name: "J Smith", email: "jsmith@example.com"}
+        const user = {id: "1", name: "J Smith", email: "jsmith@example.com", role: "User"}
         if (user){
           return user
         } else{
@@ -35,7 +34,23 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: "jwt"
+  },
+  jwt: {
+    secret: process.env.JWT_SECRET,
+    maxAge: 30 * 30 * 60 * 60
+  },
+  callbacks: {
+    async jwt({token, user}) {
+      console.log('token' ,token);
+      console.log('user' ,user);
+      return {...token, ...user}
+    },
+    async session({session, token}) {
+      console.log('@' ,session ,token);
+      session.user = token;
+      return session;
+    }
   }
-}
+};
 
 export default NextAuth(authOptions);
