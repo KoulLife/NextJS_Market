@@ -1,6 +1,6 @@
 import React from 'react';
 
-const MainPage = () => {
+const MainPage = ({mobile} : {mobile:boolean}) => {
   return (
     <div>
       MainPage
